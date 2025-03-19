@@ -19,6 +19,16 @@ import TextInputArea from "@/components/text-input-area";
 import DiffViewer from "@/components/diff-viewer";
 import { calculateDiff } from "@/lib/diff-utils";
 
+// Storage keys for localStorage
+const STORAGE_KEYS = {
+  ORIGINAL_TEXT: "shams-text-diff-original",
+  MODIFIED_TEXT: "shams-text-diff-modified",
+  VIEW_MODE: "shams-text-diff-view-mode",
+  IGNORE_WHITESPACE: "shams-text-diff-ignore-whitespace",
+  IGNORE_CASE: "shams-text-diff-ignore-case",
+  DETECT_MOVED: "shams-text-diff-detect-moved",
+};
+
 export default function Home() {
   const [originalText, setOriginalText] = useState("");
   const [modifiedText, setModifiedText] = useState("");
@@ -30,6 +40,67 @@ export default function Home() {
   const diffViewerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const compareTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Load saved data from localStorage on initial render
+  useEffect(() => {
+    // Use try-catch to handle potential localStorage errors
+    try {
+      // Load text inputs
+      const savedOriginalText = localStorage.getItem(
+        STORAGE_KEYS.ORIGINAL_TEXT
+      );
+      const savedModifiedText = localStorage.getItem(
+        STORAGE_KEYS.MODIFIED_TEXT
+      );
+
+      // Load view preferences
+      const savedViewMode = localStorage.getItem(STORAGE_KEYS.VIEW_MODE) as
+        | "unified"
+        | "split"
+        | null;
+      const savedIgnoreWhitespace = localStorage.getItem(
+        STORAGE_KEYS.IGNORE_WHITESPACE
+      );
+      const savedIgnoreCase = localStorage.getItem(STORAGE_KEYS.IGNORE_CASE);
+      const savedDetectMoved = localStorage.getItem(STORAGE_KEYS.DETECT_MOVED);
+
+      // Apply saved values if they exist
+      if (savedOriginalText) setOriginalText(savedOriginalText);
+      if (savedModifiedText) setModifiedText(savedModifiedText);
+      if (savedViewMode) setViewMode(savedViewMode);
+      if (savedIgnoreWhitespace)
+        setIgnoreWhitespace(savedIgnoreWhitespace === "true");
+      if (savedIgnoreCase) setIgnoreCase(savedIgnoreCase === "true");
+      if (savedDetectMoved) setDetectMoved(savedDetectMoved === "true");
+    } catch (error) {
+      console.error("Error loading saved data:", error);
+    }
+  }, []);
+
+  // Save text inputs to localStorage when they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.ORIGINAL_TEXT, originalText);
+      localStorage.setItem(STORAGE_KEYS.MODIFIED_TEXT, modifiedText);
+    } catch (error) {
+      console.error("Error saving text inputs:", error);
+    }
+  }, [originalText, modifiedText]);
+
+  // Save settings to localStorage when they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.VIEW_MODE, viewMode);
+      localStorage.setItem(
+        STORAGE_KEYS.IGNORE_WHITESPACE,
+        String(ignoreWhitespace)
+      );
+      localStorage.setItem(STORAGE_KEYS.IGNORE_CASE, String(ignoreCase));
+      localStorage.setItem(STORAGE_KEYS.DETECT_MOVED, String(detectMoved));
+    } catch (error) {
+      console.error("Error saving settings:", error);
+    }
+  }, [viewMode, ignoreWhitespace, ignoreCase, detectMoved]);
 
   // Memoize the comparison function to avoid recreating it on every render
   const performComparison = useCallback(() => {
@@ -120,6 +191,15 @@ export default function Home() {
     setOriginalText("");
     setModifiedText("");
     setDiffResult(null);
+
+    // Clear localStorage when resetting
+    try {
+      localStorage.removeItem(STORAGE_KEYS.ORIGINAL_TEXT);
+      localStorage.removeItem(STORAGE_KEYS.MODIFIED_TEXT);
+    } catch (error) {
+      console.error("Error clearing localStorage:", error);
+    }
+
     toast({
       title: "Reset complete",
       description: "All text inputs have been cleared.",
