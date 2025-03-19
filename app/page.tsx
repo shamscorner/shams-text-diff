@@ -104,7 +104,9 @@ export default function Home() {
 
   // Memoize the comparison function to avoid recreating it on every render
   const performComparison = useCallback(() => {
-    if (!originalText.trim() && !modifiedText.trim()) {
+    if (!originalText.trim() || !modifiedText.trim()) {
+      // Don't perform comparison if either field is empty
+      setDiffResult(null);
       return;
     }
 
@@ -151,9 +153,11 @@ export default function Home() {
 
   // Effect to trigger comparison when options change
   useEffect(() => {
-    // Only perform comparison if we have text to compare
-    if (originalText.trim() || modifiedText.trim()) {
+    // Only perform comparison if both fields have content
+    if (originalText.trim() && modifiedText.trim()) {
       performComparison();
+    } else {
+      setDiffResult(null);
     }
 
     // Cleanup timeout on unmount
@@ -166,8 +170,8 @@ export default function Home() {
 
   // Effect to trigger comparison when text changes (with debounce)
   useEffect(() => {
-    // Only perform comparison if we have text to compare
-    if (originalText.trim() || modifiedText.trim()) {
+    // Only perform comparison if both fields have content
+    if (originalText.trim() && modifiedText.trim()) {
       // Clear any existing timeout
       if (compareTimeoutRef.current) {
         clearTimeout(compareTimeoutRef.current);
@@ -178,6 +182,8 @@ export default function Home() {
         performComparison();
         compareTimeoutRef.current = null;
       }, 800); // 800ms debounce for text changes
+    } else {
+      setDiffResult(null);
     }
 
     return () => {
@@ -369,7 +375,7 @@ export default function Home() {
         />
       </div>
 
-      {diffResult && (
+      {diffResult && originalText.trim() && modifiedText.trim() && (
         <div ref={diffViewerRef}>
           <Card className="p-4 mb-4">
             <div className="flex flex-wrap gap-2 justify-end">
