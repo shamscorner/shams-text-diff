@@ -217,7 +217,12 @@ export default function Home() {
         `
       <html>
         <head>
-          <title>ShamsTextDiff - Exported Diff</title>
+          <title>Compare texts with Github like UI - ShamsTextDiff</title>
+          <meta name="description" content="Text difference comparison with a GitHub-like UI interface. Compare and visualize differences between two text inputs.">
+          <meta name="keywords" content="text diff, text comparison, diff tool, github diff, text difference">
+          <meta name="author" content="shamscorner">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <link rel="icon" href="/favicon.ico" type="image/x-icon">
           <style>
             body { font-family: system-ui, sans-serif; line-height: 1.5; }
             .diff-container { max-width: 1200px; margin: 0 auto; padding: 20px; }
@@ -227,11 +232,16 @@ export default function Home() {
             .diff-marker-added { color: #1a7f37; }
             .diff-marker-deleted { color: #cf222e; }
             .line-number { color: #6e7781; text-align: right; padding-right: 10px; user-select: none; }
+            .header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+            .logo { width: 40px; height: 40px; }
           </style>
         </head>
         <body>
           <div class="diff-container">
-            <h1>Text Difference Comparison</h1>
+            <div class="header">
+              <img src="/logo.svg" alt="ShamsTextDiff Logo" class="logo" onerror="this.style.display='none'">
+              <h1>Text Difference Comparison</h1>
+            </div>
             <div>${htmlContent}</div>
           </div>
         </body>
@@ -300,6 +310,7 @@ export default function Home() {
       <html>
         <head>
           <title>ShamsTextDiff - Print</title>
+          <meta name="description" content="Text difference comparison with GitHub-like UI">
           <style>
             body { font-family: system-ui, sans-serif; line-height: 1.5; }
             .diff-container { max-width: 100%; padding: 20px; }
@@ -309,6 +320,8 @@ export default function Home() {
             .diff-marker-added { color: #1a7f37; }
             .diff-marker-deleted { color: #cf222e; }
             .line-number { color: #6e7781; text-align: right; padding-right: 10px; }
+            .header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+            .logo { width: 40px; height: 40px; }
             @media print {
               .diff-added { background-color: #e6ffec !important; -webkit-print-color-adjust: exact; }
               .diff-deleted { background-color: #ffebe9 !important; -webkit-print-color-adjust: exact; }
@@ -317,7 +330,10 @@ export default function Home() {
         </head>
         <body>
           <div class="diff-container">
-            <h1>Text Difference Comparison</h1>
+            <div class="header">
+              <img src="/logo.svg" alt="ShamsTextDiff Logo" class="logo" onerror="this.style.display='none'">
+              <h1>Text Difference Comparison</h1>
+            </div>
             <div>${htmlContent || "No diff content available"}</div>
           </div>
           <script>
